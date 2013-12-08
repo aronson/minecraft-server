@@ -1,0 +1,40 @@
+# Maintainer: Isaac C. Aronson <isaac at pingas dot org>
+
+pkgname=minecraft-server
+pkgver=1.7.2
+pkgrel=1
+epoch=1
+pkgdesc="Minecraft server unit files, script, and jar"
+arch=(any)
+url="http://minecraft.net/"
+license=('custom')
+depends=('java-runtime-headless' 'systemd' 'screen' 'expect')
+conflicts=('minecraft-server-systemd' 'minecraft-canary')
+options=(emptydirs)
+install=minecraft-server.install
+backup=('etc/conf.d/minecraft')
+source=(https://s3.amazonaws.com/Minecraft.Download/versions/$pkgver/minecraft_server.$pkgver.jar
+        minecraftd
+        minecraftd-diag
+        minecraftd.service
+		minecraftctl
+		conf.minecraft)
+noextract=("minecraft_server.$pkgver.jar")  
+md5sums=('c48168f463e935262ea65b702f175153'
+         'a556dbffd433d6d2dcaeba33b78511c5'
+         '64e793deed5856a970e92d0942168cfd'
+         '98df0cca61c6833ad032559f07b4acb1'
+         '79da963b804c7d001045aa90eca148e6'
+         'b42821ecf13c4976d443e38cbb6f4a52')
+
+package() {
+  install -Dm744 "$srcdir/minecraftd" "$pkgdir/usr/bin/minecraftd"
+  install -Dm744 "$srcdir/minecraftd-diag" "$pkgdir/usr/bin/minecraftd-diag"
+  install -Dm744 "$srcdir/minecraftctl" "$pkgdir/usr/bin/minecraftctl"
+  
+  install -Dm644 "$srcdir/minecraft_server.$pkgver".jar "$pkgdir/srv/minecraft/minecraft_server.jar"
+  install -Dm644 "$srcdir/minecraftd.service" "$pkgdir/usr/lib/systemd/system/minecraftd.service"
+  install -Dm644 "$srcdir/conf.minecraft" "$pkgdir/etc/conf.d/minecraft"
+
+  install -d "$pkgdir/srv/minecraft/backup"
+}
